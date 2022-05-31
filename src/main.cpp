@@ -12,7 +12,7 @@ int nilaiSensor;
 
 const char *ssid = "JTI-POLINEMA";
 const char *password = "jtifast!";
-const char *mqtt_server = "192.168.68.40";
+const char *mqtt_server = "192.168.73.243"; 
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -23,6 +23,8 @@ int value = 0;
 
 DHT dht(D1, DHTTYPE);
 // LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+const int buzzer = D7; 
 
 void setup_wifi()
 {
@@ -111,6 +113,8 @@ void reconnect()
 
 void setup()
 {
+  pinMode(buzzer, OUTPUT); // Set buzzer - pin 9 as an output
+
   pinMode(LED_BUILTIN, OUTPUT); // Initialize the BUILTIN_LED pin as an output
   Serial.begin(9600);
   setup_wifi();
@@ -188,15 +192,20 @@ void loop()
     Serial.print("Nilai Sensor : ");
     Serial.println(nilaiSensor);
 
-    if (hic > 35)
+    if (hic > 29 )
     {
+
       client.publish("node1/detectionFire", "API Detect");
+      tone(buzzer, 1000); // Send 1KHz sound signal...
+       delay(1000);        // ...for 1 sec
+      noTone(buzzer);     // Stop sound...
+      delay(1000); 
     }
     else
     {
       client.publish("node1/nodeDetection", "Tidak Detect");
     }
-
+   
     // // lcd.home();
     // // lcd.print("Nilai Intensitas");
     // String myString = String(nilaiSensor);
